@@ -6,6 +6,11 @@
   --surface: #ffffff;
   --border: #d0d7de;
   --danger: #cf222e;
+  --danger-bg: #ffebe9;
+  --success: #1a7f37;
+  --success-bg: #dafbe1;
+  --info: #0969da;
+  --info-bg: #ddf4ff;
 
   color-scheme: light dark;
   font-family: system-ui, 'Segoe UI', 'Malgun Gothic', sans-serif;
@@ -22,6 +27,11 @@
     --surface: #161b22;
     --border: #30363d;
     --danger: #ff7b72;
+    --danger-bg: rgba(248, 81, 73, 0.15);
+    --success: #3fb950;
+    --success-bg: rgba(46, 160, 67, 0.15);
+    --info: #58a6ff;
+    --info-bg: rgba(56, 139, 253, 0.15);
   }
 }
 
@@ -59,6 +69,14 @@ h2 {
   color: var(--danger);
 }
 
+.mono {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+section + section {
+  margin-top: 32px;
+}
+
 /* 요약 카드 */
 .summary-cards {
   display: grid;
@@ -88,4 +106,64 @@ h2 {
 
 .summary-card-value.danger {
   color: var(--danger);
+}
+
+/* 프로세스 목록 표 */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.process-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.process-table th,
+.process-table td {
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.process-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.process-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* 상태 뱃지: badge-{RunStatus} + 이력 없음(badge-none) */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.badge-failed {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.badge-running {
+  color: var(--info);
+  background: var(--info-bg);
+}
+
+.badge-none {
+  color: var(--muted);
+  border: 1px solid var(--border);
 }
