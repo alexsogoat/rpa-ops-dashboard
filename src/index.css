@@ -258,6 +258,54 @@ section + section {
   border-radius: inherit;
 }
 
+/* 필터 바 */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.filter-field {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.filter-field-grow {
+  flex: 1 1 220px;
+}
+
+.filter-field select,
+.filter-field input {
+  min-width: 140px;
+  padding: 7px 10px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.filter-field select:focus-visible,
+.filter-field input:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-border);
+  outline-offset: 0;
+}
+
+.filter-result {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
 /* 프로세스 목록 표 */
 .table-wrap {
   overflow-x: auto;

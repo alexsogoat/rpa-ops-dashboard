@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getProcesses } from '../api/processes';
 import { getSummary } from '../api/summary';
-import ProcessTable from '../components/ProcessTable';
+import FilterableProcessList from '../components/FilterableProcessList';
 import SummaryCard from '../components/SummaryCard';
 import type { Process } from '../types/process';
 import type { Summary } from '../types/summary';
@@ -160,7 +160,7 @@ function ProcessListContent({ state }: { state: ProcessListState }) {
     return <p className="empty">등록된 프로세스가 없습니다.</p>;
   }
 
-  return <ProcessTable processes={state.data} />;
+  return <FilterableProcessList processes={state.data} />;
 }
 
 export default DashboardPage;
