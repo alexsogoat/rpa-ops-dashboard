@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { getProcesses } from '../api/processes';
 import { getSummary } from '../api/summary';
+import ProcessTable from '../components/ProcessTable';
 import SummaryCard from '../components/SummaryCard';
+import type { Process } from '../types/process';
 import type { Summary } from '../types/summary';
 
 /** 요약 영역의 화면 상태. 로딩·오류·성공 중 정확히 하나다 */
@@ -9,8 +12,17 @@ type SummaryState =
   | { status: 'error'; message: string }
   | { status: 'success'; data: Summary };
 
+/** 목록 영역의 화면 상태. SummaryState와 data 타입만 다르다 */
+type ProcessListState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'success'; data: Process[] };
+
 function DashboardPage() {
   const [summaryState, setSummaryState] = useState<SummaryState>({ status: 'loading' });
+  const [processListState, setProcessListState] = useState<ProcessListState>({
+    status: 'loading',
+  });
 
   // 의존성 배열이 []이므로 화면이 처음 그려진 뒤 한 번만 요청한다
   useEffect(() => {
@@ -33,6 +45,27 @@ function DashboardPage() {
     };
   }, []);
 
+  // 요약 effect와 같은 패턴이다. 두 요청은 서로 기다리지 않고, 한쪽이 실패해도 다른 쪽은 표시된다
+  // (반복되는 부분은 공통화 리팩터링 때 커스텀 훅으로 묶는다)
+  useEffect(() => {
+    let ignore = false;
+
+    getProcesses()
+      .then((data) => {
+        if (!ignore) setProcessListState({ status: 'success', data });
+      })
+      .catch((error: unknown) => {
+        if (!ignore) {
+          const message = error instanceof Error ? error.message : '알 수 없는 오류';
+          setProcessListState({ status: 'error', message });
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <main className="container">
       <header className="page-header">
@@ -43,6 +76,11 @@ function DashboardPage() {
       <section aria-labelledby="summary-title">
         <h2 id="summary-title">오늘 요약</h2>
         <SummaryContent state={summaryState} />
+      </section>
+
+      <section aria-labelledby="process-list-title">
+        <h2 id="process-list-title">프로세스 목록</h2>
+        <ProcessListContent state={processListState} />
       </section>
     </main>
   );
@@ -79,6 +117,23 @@ function SummaryContent({ state }: { state: SummaryState }) {
       </p>
     </>
   );
+}
+
+/** 상태에 따라 로딩 문구·오류 문구·빈 목록 문구·표 중 하나를 그린다 */
+function ProcessListContent({ state }: { state: ProcessListState }) {
+  if (state.status === 'loading') {
+    return <p className="muted">목록을 불러오는 중…</p>;
+  }
+
+  if (state.status === 'error') {
+    return <p className="error" role="alert">목록을 불러오지 못했습니다. ({state.message})</p>;
+  }
+
+  if (state.data.length === 0) {
+    return <p className="muted">등록된 프로세스가 없습니다.</p>;
+  }
+
+  return <ProcessTable processes={state.data} />;
 }
 
 export default DashboardPage;
