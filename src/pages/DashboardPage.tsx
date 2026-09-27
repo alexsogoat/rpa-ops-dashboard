@@ -67,29 +67,47 @@ function DashboardPage() {
   }, []);
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>RPA 운영 대시보드</h1>
-        <p className="muted">MSW 목 API 데모 · 모든 데이터는 가상입니다</p>
+    <>
+      <header className="app-bar">
+        <div className="app-bar-inner">
+          <span className="app-logo" aria-hidden="true">
+            R
+          </span>
+          <h1>RPA 운영 대시보드</h1>
+          <span className="demo-badge">MSW 목 API 데모</span>
+          <span className="app-bar-note">모든 데이터는 가상입니다</span>
+        </div>
       </header>
 
-      <section aria-labelledby="summary-title">
-        <h2 id="summary-title">오늘 요약</h2>
-        <SummaryContent state={summaryState} />
-      </section>
+      <main className="container">
+        <section aria-labelledby="summary-title">
+          <div className="section-header">
+            <h2 id="summary-title">오늘 요약</h2>
+            {summaryState.status === 'success' && (
+              <span className="section-meta">기준일 {summaryState.data.date} (KST)</span>
+            )}
+          </div>
+          <SummaryContent state={summaryState} />
+        </section>
 
-      <section aria-labelledby="process-list-title">
-        <h2 id="process-list-title">프로세스 목록</h2>
-        <ProcessListContent state={processListState} />
-      </section>
-    </main>
+        <section aria-labelledby="process-list-title">
+          <div className="section-header">
+            <h2 id="process-list-title">프로세스 목록</h2>
+            {processListState.status === 'success' && (
+              <span className="section-meta">{processListState.data.length}개</span>
+            )}
+          </div>
+          <ProcessListContent state={processListState} />
+        </section>
+      </main>
+    </>
   );
 }
 
 /** 상태에 따라 로딩 문구·오류 문구·카드 3개 중 하나를 그린다 */
 function SummaryContent({ state }: { state: SummaryState }) {
   if (state.status === 'loading') {
-    return <p className="muted">요약을 불러오는 중…</p>;
+    return <p className="loading">요약을 불러오는 중…</p>;
   }
 
   if (state.status === 'error') {
@@ -97,24 +115,33 @@ function SummaryContent({ state }: { state: SummaryState }) {
   }
 
   // 여기서는 status가 'success'로 좁혀져서 state.data를 쓸 수 있다
-  const { date, totalRuns, successRate, errorCount } = state.data;
+  const { totalRuns, successRate, errorCount } = state.data;
 
   return (
     <>
       <div className="summary-cards">
-        <SummaryCard label="오늘 실행" value={`${totalRuns}건`} />
-        {/* 완료된 실행이 없으면 successRate가 null → 명세대로 '-' 표시 */}
-        <SummaryCard label="성공률" value={successRate === null ? '-' : `${successRate}%`} />
+        <SummaryCard label="오늘 실행" value={String(totalRuns)} unit="건" hint="실행 중인 건 포함" />
+        {/* 완료된 실행이 없으면 successRate가 null → 명세대로 '-'만 표시하고 단위·막대는 뺀다 */}
+        {successRate === null ? (
+          <SummaryCard label="성공률" value="-" hint="완료된 실행 기준" />
+        ) : (
+          <SummaryCard
+            label="성공률"
+            value={String(successRate)}
+            unit="%"
+            meter={successRate}
+            hint="완료된 실행 기준"
+          />
+        )}
         <SummaryCard
           label="오류"
-          value={`${errorCount}건`}
+          value={String(errorCount)}
+          unit="건"
+          hint="오늘 실패한 실행"
           tone={errorCount > 0 ? 'danger' : 'default'}
         />
       </div>
-      <p className="muted">
-        기준일 {date} (KST)
-        {totalRuns === 0 && ' · 오늘은 아직 실행된 프로세스가 없습니다'}
-      </p>
+      {totalRuns === 0 && <p className="muted">오늘은 아직 실행된 프로세스가 없습니다.</p>}
     </>
   );
 }
@@ -122,7 +149,7 @@ function SummaryContent({ state }: { state: SummaryState }) {
 /** 상태에 따라 로딩 문구·오류 문구·빈 목록 문구·표 중 하나를 그린다 */
 function ProcessListContent({ state }: { state: ProcessListState }) {
   if (state.status === 'loading') {
-    return <p className="muted">목록을 불러오는 중…</p>;
+    return <p className="loading">목록을 불러오는 중…</p>;
   }
 
   if (state.status === 'error') {
@@ -130,7 +157,7 @@ function ProcessListContent({ state }: { state: ProcessListState }) {
   }
 
   if (state.data.length === 0) {
-    return <p className="muted">등록된 프로세스가 없습니다.</p>;
+    return <p className="empty">등록된 프로세스가 없습니다.</p>;
   }
 
   return <ProcessTable processes={state.data} />;
