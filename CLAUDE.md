@@ -116,6 +116,8 @@
 - `npm run preview` — 빌드 결과를 로컬에서 확인
 
 ## AX 로그 형식 (`docs/ax-log.md`에 누적)
+- `docs/ax-log.md` (공개): 세션 단위 요약만. 코드 줄 단위로 누가 썼는지는 적지 않는다
+
 ```markdown
 ## YYYY-MM-DD / 작업 내용
 - AI가 제안한 것:
