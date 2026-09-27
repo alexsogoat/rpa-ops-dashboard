@@ -34,15 +34,20 @@ function ProcessTable({ processes }: ProcessTableProps) {
         <tbody>
           {/* key: React가 행을 구분하는 값. 목록 안에서 겹치지 않는 id를 쓴다 */}
           {processes.map((item) => (
-            <tr key={item.id}>
-              <td className="mono">{item.id}</td>
-              <td>{item.name}</td>
-              <td>{item.department}</td>
-              <td>{TRIGGER_LABEL[item.triggerType]}</td>
+            // 최근 실행이 실패한 행은 row-failed 클래스로 강조한다
+            <tr key={item.id} className={item.lastStatus === 'failed' ? 'row-failed' : undefined}>
+              <td className="cell-id">{item.id}</td>
+              <td className="cell-name">{item.name}</td>
+              <td className="cell-muted">{item.department}</td>
+              <td>
+                <span className={`chip chip-${item.triggerType}`}>
+                  {TRIGGER_LABEL[item.triggerType]}
+                </span>
+              </td>
               <td>
                 <StatusBadge status={item.lastStatus} />
               </td>
-              <td>{formatDateTime(item.lastRunAt)}</td>
+              <td className="cell-time">{formatDateTime(item.lastRunAt)}</td>
             </tr>
           ))}
         </tbody>
