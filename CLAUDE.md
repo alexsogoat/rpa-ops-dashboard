@@ -94,7 +94,7 @@
 - `any` 금지. 상태값은 유니온 리터럴 타입. 타입 단언(`as`)은 이유를 설명할 수 있을 때만
 - API 타입은 `src/types/`에 명세와 1:1로 정의하고, 컴포넌트 props도 타입을 명시한다
 - 이름: 컴포넌트 PascalCase(`StatusBadge.tsx`), 훅 `useXxx`, API 함수는 동사로 시작(`getProcesses`, `requestRerun`)
-- 폴더: `src/api`(fetch 함수) · `src/mocks`(MSW 핸들러·가상 데이터) · `src/types` · `src/components`(재사용) · `src/pages`(화면)
+- 폴더: `src/api`(fetch 함수) · `src/mocks`(MSW 핸들러·가상 데이터) · `src/types` · `src/components`(재사용) · `src/pages`(화면) · `src/utils`(포맷 등 순수 함수)
 - API를 호출하는 화면은 로딩·오류·빈 결과 상태를 모두 표시한다
 
 ## 데이터 규칙

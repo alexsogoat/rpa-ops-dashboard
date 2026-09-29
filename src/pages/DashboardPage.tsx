@@ -66,41 +66,29 @@ function DashboardPage() {
     };
   }, []);
 
+  // 상단 바는 모든 화면 공통이라 App.tsx로 옮겼다
   return (
-    <>
-      <header className="app-bar">
-        <div className="app-bar-inner">
-          <span className="app-logo" aria-hidden="true">
-            R
-          </span>
-          <h1>RPA 운영 대시보드</h1>
-          <span className="demo-badge">MSW 목 API 데모</span>
-          <span className="app-bar-note">모든 데이터는 가상입니다</span>
+    <main className="container">
+      <section aria-labelledby="summary-title">
+        <div className="section-header">
+          <h2 id="summary-title">오늘 요약</h2>
+          {summaryState.status === 'success' && (
+            <span className="section-meta">기준일 {summaryState.data.date} (KST)</span>
+          )}
         </div>
-      </header>
+        <SummaryContent state={summaryState} />
+      </section>
 
-      <main className="container">
-        <section aria-labelledby="summary-title">
-          <div className="section-header">
-            <h2 id="summary-title">오늘 요약</h2>
-            {summaryState.status === 'success' && (
-              <span className="section-meta">기준일 {summaryState.data.date} (KST)</span>
-            )}
-          </div>
-          <SummaryContent state={summaryState} />
-        </section>
-
-        <section aria-labelledby="process-list-title">
-          <div className="section-header">
-            <h2 id="process-list-title">프로세스 목록</h2>
-            {processListState.status === 'success' && (
-              <span className="section-meta">{processListState.data.length}개</span>
-            )}
-          </div>
-          <ProcessListContent state={processListState} />
-        </section>
-      </main>
-    </>
+      <section aria-labelledby="process-list-title">
+        <div className="section-header">
+          <h2 id="process-list-title">프로세스 목록</h2>
+          {processListState.status === 'success' && (
+            <span className="section-meta">{processListState.data.length}개</span>
+          )}
+        </div>
+        <ProcessListContent state={processListState} />
+      </section>
+    </main>
   );
 }
 

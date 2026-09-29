@@ -306,7 +306,7 @@ section + section {
   font-variant-numeric: tabular-nums;
 }
 
-/* 프로세스 목록 표 */
+/* 데이터 표 (프로세스 목록·실행 이력 공통) */
 .table-wrap {
   overflow-x: auto;
   background: var(--surface);
@@ -315,21 +315,21 @@ section + section {
   box-shadow: var(--shadow);
 }
 
-.process-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
 }
 
-.process-table th,
-.process-table td {
+.data-table th,
+.data-table td {
   padding: 12px 16px;
   text-align: left;
   white-space: nowrap;
   border-bottom: 1px solid var(--border);
 }
 
-.process-table th {
+.data-table th {
   padding-block: 10px;
   color: var(--muted);
   background: var(--surface-2);
@@ -337,20 +337,20 @@ section + section {
   font-weight: 600;
 }
 
-.process-table tbody tr:last-child td {
+.data-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.process-table tbody tr:hover td {
+.data-table tbody tr:hover td {
   background: var(--surface-2);
 }
 
 /* 최근 실행이 실패한 행: 배경색과 왼쪽 선으로 눈에 띄게 */
-.process-table tbody tr.row-failed td {
+.data-table tbody tr.row-failed td {
   background: var(--danger-bg);
 }
 
-.process-table tbody tr.row-failed td:first-child {
+.data-table tbody tr.row-failed td:first-child {
   box-shadow: inset 3px 0 0 var(--danger);
 }
 
@@ -362,6 +362,104 @@ section + section {
 
 .cell-name {
   font-weight: 600;
+}
+
+/* 프로세스명 링크: 평소에는 글자색 그대로, 마우스를 올리면 링크임을 드러낸다 */
+.cell-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cell-name a:hover,
+.cell-name a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* 실행 이력 표의 오류 셀: 메시지가 길어서 줄바꿈을 허용한다 */
+.data-table td.cell-error {
+  min-width: 280px;
+  white-space: normal;
+}
+
+.error-type {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.error-time {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 프로세스 정보 카드 */
+.info-card {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.info-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-card-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.info-card-desc {
+  margin: 6px 0 16px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* dt(항목명)·dd(값) 쌍을 카드 너비에 맞춰 여러 열로 배치한다 */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+
+.info-grid dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.info-grid dd {
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+}
+
+/* 목록으로 돌아가기 링크 */
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 
 .cell-muted {
