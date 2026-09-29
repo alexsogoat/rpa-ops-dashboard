@@ -1,17 +1,8 @@
-import type { DateTimeString, TriggerType } from '../types/common';
+import { Link } from 'react-router';
 import type { Process } from '../types/process';
+import { formatDateTime } from '../utils/format';
 import StatusBadge from './StatusBadge';
-
-// 명세 "실행 방식" 표의 화면 표시값
-const TRIGGER_LABEL: Record<TriggerType, string> = {
-  scheduled: '예약',
-  manual: '수기',
-};
-
-/** "2026-09-24T06:00:00+09:00" → "2026-09-24 06:00". 명세상 항상 KST 오프셋이 붙어 오므로 문자열을 잘라 쓴다 */
-function formatDateTime(value: DateTimeString | null): string {
-  return value === null ? '-' : value.slice(0, 16).replace('T', ' ');
-}
+import TriggerChip from './TriggerChip';
 
 interface ProcessTableProps {
   processes: Process[];
@@ -20,7 +11,7 @@ interface ProcessTableProps {
 function ProcessTable({ processes }: ProcessTableProps) {
   return (
     <div className="table-wrap">
-      <table className="process-table">
+      <table className="data-table">
         <thead>
           <tr>
             <th scope="col">ID</th>
@@ -37,12 +28,13 @@ function ProcessTable({ processes }: ProcessTableProps) {
             // 최근 실행이 실패한 행은 row-failed 클래스로 강조한다
             <tr key={item.id} className={item.lastStatus === 'failed' ? 'row-failed' : undefined}>
               <td className="cell-id">{item.id}</td>
-              <td className="cell-name">{item.name}</td>
+              <td className="cell-name">
+                {/* <a href>와 달리 페이지를 새로 받지 않고 URL과 화면만 바꾼다 */}
+                <Link to={`/processes/${item.id}`}>{item.name}</Link>
+              </td>
               <td className="cell-muted">{item.department}</td>
               <td>
-                <span className={`chip chip-${item.triggerType}`}>
-                  {TRIGGER_LABEL[item.triggerType]}
-                </span>
+                <TriggerChip triggerType={item.triggerType} />
               </td>
               <td>
                 <StatusBadge status={item.lastStatus} />

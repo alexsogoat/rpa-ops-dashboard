@@ -130,6 +130,24 @@ export function getProcessList(): Process[] {
   return processBases.map(toProcess);
 }
 
+/** id에 해당하는 프로세스 상세. 없는 id면 undefined (핸들러가 404로 바꾼다) */
+export function getProcessDetail(id: string): ProcessDetail | undefined {
+  const base = processBases.find((item) => item.id === id);
+  if (base === undefined) return undefined;
+
+  // 목록 항목 필드 + 상세 전용 필드(description, schedule)
+  return { ...toProcess(base), description: base.description, schedule: base.schedule };
+}
+
+/** id에 해당하는 프로세스의 실행 이력 (최신순 최대 20건, 명세 4번). 없는 id면 undefined */
+export function getProcessRuns(id: string): Run[] | undefined {
+  const base = processBases.find((item) => item.id === id);
+  if (base === undefined) return undefined;
+
+  // 프로세스는 있는데 이력 항목이 없으면 빈 배열 → undefined는 "프로세스 없음"에만 쓴다
+  return (runsByProcess[id] ?? []).slice(0, 20);
+}
+
 export function getAllRuns(): Run[] {
   return Object.values(runsByProcess).flat();
 }
