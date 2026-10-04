@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { getProcessDetail, getProcessRuns } from '../api/processes';
 import ProcessInfo from '../components/ProcessInfo';
+import RerunForm from '../components/RerunForm';
 import RunTable from '../components/RunTable';
 import type { ProcessDetail, Run } from '../types/process';
 
@@ -75,6 +76,18 @@ function ProcessDetailPage() {
         </div>
         <DetailContent state={detailState} />
       </section>
+
+      {/* 프로세스가 확인된 뒤에만 재실행 폼을 보여준다 (없는 id·로딩 중에는 요청할 대상이 없다) */}
+      {detailState.status === 'success' && (
+        <section aria-labelledby="rerun-title">
+          <div className="section-header">
+            <h2 id="rerun-title">수기 재실행</h2>
+            <span className="section-meta">기준일자를 지정해 다시 실행합니다</span>
+          </div>
+          {/* key: 프로세스가 바뀌면 폼을 새로 만들어 이전 프로세스의 입력·결과가 남지 않게 한다 */}
+          <RerunForm key={detailState.data.id} processId={detailState.data.id} />
+        </section>
+      )}
 
       <section aria-labelledby="runs-title">
         <div className="section-header">
