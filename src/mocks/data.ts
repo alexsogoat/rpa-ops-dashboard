@@ -1,6 +1,6 @@
 // 가상 데이터. 날짜는 고정값이 아니라 워커가 시작된 시각(now) 기준 상대값으로 만든다.
 // 새로고침하면 다시 만들어지므로 상태도 초기화된다.
-import type { ErrorType, RunStatus, TriggerType } from '../types/common';
+import type { DateString, ErrorType, RunStatus, TriggerType } from '../types/common';
 import type { Process, ProcessDetail, Run } from '../types/process';
 
 const MINUTE = 60 * 1000;
@@ -146,6 +146,27 @@ export function getProcessRuns(id: string): Run[] | undefined {
 
   // 프로세스는 있는데 이력 항목이 없으면 빈 배열 → undefined는 "프로세스 없음"에만 쓴다
   return (runsByProcess[id] ?? []).slice(0, 20);
+}
+
+/**
+ * 수기 재실행 접수: "실행 중"인 새 이력을 맨 앞(최신)에 추가하고 돌려준다.
+ * 이후 이 프로세스의 lastStatus가 running이 되므로, 다시 요청하면 409가 된다. 새로고침하면 초기화된다.
+ */
+export function addManualRun(id: string, baseDate: DateString): Run {
+  runSeq += 1;
+  const run: Run = {
+    id: `RUN-${String(runSeq).padStart(6, '0')}`,
+    status: 'running',
+    triggerType: 'manual',
+    baseDate,
+    // 접수 시각은 워커가 시작된 시각(now)이 아니라 요청이 들어온 실제 시각
+    startedAt: toKstDateTime(new Date()),
+    endedAt: null,
+    error: null,
+  };
+  // 기존 배열을 고치지 않고, 새 이력을 앞에 둔 새 배열로 바꾼다
+  runsByProcess[id] = [run, ...(runsByProcess[id] ?? [])];
+  return run;
 }
 
 export function getAllRuns(): Run[] {

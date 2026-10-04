@@ -1,5 +1,5 @@
-import type { ApiError } from '../types/common';
-import type { Process, ProcessDetail, Run } from '../types/process';
+import type { ApiError, DateString } from '../types/common';
+import type { Process, ProcessDetail, RerunRequest, RerunResponse, Run } from '../types/process';
 
 /**
  * 실패 응답(4xx·5xx)에서 화면에 보여줄 메시지를 꺼낸다.
@@ -49,4 +49,22 @@ export async function getProcessRuns(id: string): Promise<Run[]> {
   }
 
   return (await res.json()) as Run[];
+}
+
+/** POST /api/processes/{id}/runs — 수기 재실행 요청. 접수(202)되면 접수 정보를, 400·404·409면 서버 메시지로 실패한다 */
+export async function requestRerun(id: string, baseDate: DateString): Promise<RerunResponse> {
+  // 본문에 명세 타입을 붙여 둔다. 명세의 필드 이름이 바뀌면 여기서 컴파일 오류로 알 수 있다
+  const body: RerunRequest = { baseDate };
+
+  const res = await fetch(`/api/processes/${encodeURIComponent(id)}/runs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(await readErrorMessage(res, '프로세스 재실행 요청 실패'));
+  }
+
+  return (await res.json()) as RerunResponse;
 }
