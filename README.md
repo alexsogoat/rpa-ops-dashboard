@@ -25,7 +25,7 @@ RPA 운영 담당자가 자동화 프로세스의 상태와 오류를 한눈에 
 - [x] README v0.1
 - [x] 필터 · 검색 (상태 · 실행 방식 · 이름)
 - [x] 프로세스 상세 (실행 이력과 오류, 최근 20건)
-- [ ] 수기 재실행 (기준일자 입력 → 202 접수 / 400 잘못된 기준일자 / 409 이미 실행 중)
+- [x] 수기 재실행 (기준일자 입력 → 202 접수 / 400 잘못된 기준일자 / 409 이미 실행 중)
 - [ ] 공통화 리팩터링 (fetch 래퍼, 커스텀 훅)
 - [ ] README 완성, v1.0.0
 
@@ -42,7 +42,7 @@ React 19 · TypeScript 6 · Vite 8 · MSW 2 · Vercel
 docs/api-spec.md        API 명세 (기준 문서)
 src/
   types/                명세와 1:1로 맞춘 타입
-  api/                  fetch 함수 (getSummary, getProcesses, getProcessDetail, getProcessRuns)
+  api/                  fetch 함수 (getSummary, getProcesses, getProcessDetail, getProcessRuns, requestRerun)
   pages/                화면 (DashboardPage, ProcessDetailPage, NotFoundPage)
   components/           재사용 컴포넌트 (요약 카드, 목록·이력 표, 필터 바, 상태 뱃지 등)
   utils/                표시용 포맷 함수
@@ -63,7 +63,7 @@ public/
 | GET | `/api/processes` | 프로세스 목록 | 구현 |
 | GET | `/api/processes/{id}` | 프로세스 상세 | 구현 |
 | GET | `/api/processes/{id}/runs` | 실행 이력 (최근 20건) | 구현 |
-| POST | `/api/processes/{id}/runs` | 수기 재실행 요청 (202 · 400 · 409) | 예정 |
+| POST | `/api/processes/{id}/runs` | 수기 재실행 요청 (202 · 400 · 409) | 구현 |
 
 ## 로컬 실행
 
