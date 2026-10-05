@@ -16,6 +16,16 @@ function ProcessDetailPage() {
   // 타입 인자 'id'로 꺼낼 수 있는 키를 정한다. 값 타입은 string | undefined다
   const { id } = useParams<'id'>();
 
+  // key: id가 바뀌면 화면을 새로 만들어 이전 프로세스의 데이터가 남지 않게 한다 (useFetch는 id가 바뀌어도 이전 상태를 유지하므로)
+  return <ProcessDetailView key={id} id={id} />;
+}
+
+interface ProcessDetailViewProps {
+  /** 주소창의 프로세스 ID. 경로에 없으면 undefined */
+  id: string | undefined;
+}
+
+function ProcessDetailView({ id }: ProcessDetailViewProps) {
   // useFetch에 넘기는 함수는 id가 같은 동안 "같은 함수"여야 한다. 렌더링마다 새로 만들면 요청이 계속 반복된다.
   // useCallback이 id가 바뀔 때만 함수를 새로 만들어 준다 (두 번째 인자 [id]가 그 기준)
   const fetchDetail = useCallback(() => {
