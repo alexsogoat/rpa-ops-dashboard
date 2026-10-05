@@ -1,67 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { Link, useParams } from 'react-router';
 import { getProcessDetail, getProcessRuns } from '../api/processes';
 import ProcessInfo from '../components/ProcessInfo';
 import RerunForm from '../components/RerunForm';
 import RunTable from '../components/RunTable';
+import { useFetch, type FetchState } from '../hooks/useFetch';
 import type { ProcessDetail, Run } from '../types/process';
 
-type DetailState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'success'; data: ProcessDetail };
+type DetailState = FetchState<ProcessDetail>;
 
-type RunsState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'success'; data: Run[] };
+type RunsState = FetchState<Run[]>;
 
 function ProcessDetailPage() {
   // URL /processes/PRC-001 → id === 'PRC-001'
   // 타입 인자 'id'로 꺼낼 수 있는 키를 정한다. 값 타입은 string | undefined다
   const { id } = useParams<'id'>();
 
-  const [detailState, setDetailState] = useState<DetailState>({ status: 'loading' });
-  const [runsState, setRunsState] = useState<RunsState>({ status: 'loading' });
-
-  // id가 바뀌면 다시 요청한다. 이전 id의 늦은 응답은 정리 함수(ignore = true)로 무시한다
-  useEffect(() => {
-    if (!id) return;
-
-    let ignore = false;
-
-    getProcessDetail(id)
-      .then((data) => {
-        if (!ignore) setDetailState({ status: 'success', data });
-      })
-      .catch((error: unknown) => {
-        if (!ignore) {
-          if (error instanceof Error) {
-            setDetailState({ status: 'error', message: error.message });
-          } else {
-            setDetailState({ status: 'error', message: '알 수 없는 오류가 발생했습니다.' });
-          }
-        }
-      });
-
-    getProcessRuns(id)
-      .then((data) => {
-        if (!ignore) setRunsState({ status: 'success', data });
-      })
-      .catch((error: unknown) => {
-        if (!ignore) {
-          if (error instanceof Error) {
-            setRunsState({ status: 'error', message: error.message });
-          } else {
-            setRunsState({ status: 'error', message: '알 수 없는 오류가 발생했습니다.' });
-          }
-        }
-      });
-
-    return () => {
-      ignore = true;
-    };
+  // useFetch에 넘기는 함수는 id가 같은 동안 "같은 함수"여야 한다. 렌더링마다 새로 만들면 요청이 계속 반복된다.
+  // useCallback이 id가 바뀔 때만 함수를 새로 만들어 준다 (두 번째 인자 [id]가 그 기준)
+  const fetchDetail = useCallback(() => {
+    if (!id) return Promise.reject(new Error('프로세스 ID가 없습니다.'));
+    return getProcessDetail(id);
   }, [id]);
+  const detailState = useFetch(fetchDetail);
+
+  const fetchRuns = useCallback(() => {
+    if (!id) return Promise.reject(new Error('프로세스 ID가 없습니다.'));
+    return getProcessRuns(id);
+  }, [id]);
+  const runsState = useFetch(fetchRuns);
 
   return (
     <main className="container">
