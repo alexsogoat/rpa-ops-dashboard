@@ -1,72 +1,20 @@
-import { useEffect, useState } from 'react';
 import { getProcesses } from '../api/processes';
 import { getSummary } from '../api/summary';
 import FilterableProcessList from '../components/FilterableProcessList';
 import SummaryCard from '../components/SummaryCard';
+import { useFetch, type FetchState } from '../hooks/useFetch';
 import type { Process } from '../types/process';
 import type { Summary } from '../types/summary';
 
-/** 요약 영역의 화면 상태. 로딩·오류·성공 중 정확히 하나다 */
-type SummaryState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'success'; data: Summary };
-
-/** 목록 영역의 화면 상태. SummaryState와 data 타입만 다르다 */
-type ProcessListState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'success'; data: Process[] };
+type SummaryState = FetchState<Summary>;
+type ProcessListState = FetchState<Process[]>;
 
 function DashboardPage() {
-  const [summaryState, setSummaryState] = useState<SummaryState>({ status: 'loading' });
-  const [processListState, setProcessListState] = useState<ProcessListState>({
-    status: 'loading',
-  });
+  // 요청·로딩·오류·성공 상태는 useFetch가 관리한다. 두 요청은 서로 기다리지 않고 독립적으로 동작한다
+  const summaryState = useFetch(getSummary);
+  const processListState = useFetch(getProcesses);
 
-  // 의존성 배열이 []이므로 화면이 처음 그려진 뒤 한 번만 요청한다
-  useEffect(() => {
-    // StrictMode(개발 모드)에서는 effect가 두 번 실행된다. 이미 정리된 effect의 응답은 무시한다
-    let ignore = false;
-
-    getSummary()
-      .then((data) => {
-        if (!ignore) setSummaryState({ status: 'success', data });
-      })
-      .catch((error: unknown) => {
-        if (!ignore) {
-          const message = error instanceof Error ? error.message : '알 수 없는 오류';
-          setSummaryState({ status: 'error', message });
-        }
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // 요약 effect와 같은 패턴이다. 두 요청은 서로 기다리지 않고, 한쪽이 실패해도 다른 쪽은 표시된다
-  // (반복되는 부분은 공통화 리팩터링 때 커스텀 훅으로 묶는다)
-  useEffect(() => {
-    let ignore = false;
-
-    getProcesses()
-      .then((data) => {
-        if (!ignore) setProcessListState({ status: 'success', data });
-      })
-      .catch((error: unknown) => {
-        if (!ignore) {
-          const message = error instanceof Error ? error.message : '알 수 없는 오류';
-          setProcessListState({ status: 'error', message });
-        }
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // 상단 바는 모든 화면 공통이라 App.tsx로 옮겼다
+  // 상단 바는 모든 화면 공통이라 App.tsx에 있다
   return (
     <main className="container">
       <section aria-labelledby="summary-title">
@@ -90,7 +38,7 @@ function DashboardPage() {
       </section>
     </main>
   );
-}
+  };
 
 /** 상태에 따라 로딩 문구·오류 문구·카드 3개 중 하나를 그린다 */
 function SummaryContent({ state }: { state: SummaryState }) {
