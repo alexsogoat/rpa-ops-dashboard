@@ -7,7 +7,8 @@ function App() {
   return (
     // BrowserRouter: 주소창 URL을 읽고, 화면 이동 시 새로고침 없이 URL만 바꾼다
     <BrowserRouter>
-      {/* 상단 바는 모든 화면에 공통이라 Routes 밖에 둔다 */}
+      {/* 상단 바는 모든 화면에 공통이라 Routes 밖에 둔다.
+          index.html의 정적 뼈대와 같은 마크업을 유지한다 (다르면 첫 렌더링 순간 화면이 움직인다) */}
       <header className="app-bar">
         <div className="app-bar-inner">
           <span className="app-logo" aria-hidden="true">

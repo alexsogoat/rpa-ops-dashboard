@@ -7,7 +7,24 @@
     <title>RPA 운영 대시보드</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!--
+      정적 뼈대: JS를 받고 MSW 워커가 준비되는 동안 보이는 화면.
+      React가 첫 렌더링 때 #root 안을 통째로 바꾼다.
+      상단 바는 src/App.tsx의 <header>와 같은 마크업을 유지한다 (다르면 첫 렌더링 순간 화면이 움직인다)
+    -->
+    <div id="root">
+      <header class="app-bar">
+        <div class="app-bar-inner">
+          <span class="app-logo" aria-hidden="true">R</span>
+          <h1>RPA 운영 대시보드</h1>
+          <span class="demo-badge">MSW 목 API 데모</span>
+          <span class="app-bar-note">모든 데이터는 가상입니다</span>
+        </div>
+      </header>
+      <main class="container">
+        <p class="loading">불러오는 중…</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
