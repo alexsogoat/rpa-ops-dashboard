@@ -11,8 +11,9 @@ type ProcessListState = FetchState<Process[]>;
 
 function DashboardPage() {
   // 요청·로딩·오류·성공 상태는 useFetch가 관리한다. 두 요청은 서로 기다리지 않고 독립적으로 동작한다
-  const summaryState = useFetch(getSummary);
-  const processListState = useFetch(getProcesses);
+  // 첫 인자는 캐시 키(요청 경로). 상세에서 돌아오면 받아 둔 응답을 바로 보여 주고 뒤에서 다시 받는다
+  const summaryState = useFetch('/api/summary', getSummary);
+  const processListState = useFetch('/api/processes', getProcesses);
 
   // 상단 바는 모든 화면 공통이라 App.tsx에 있다
   return (

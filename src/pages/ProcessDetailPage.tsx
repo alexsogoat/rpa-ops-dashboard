@@ -16,7 +16,7 @@ function ProcessDetailPage() {
   // 타입 인자 'id'로 꺼낼 수 있는 키를 정한다. 값 타입은 string | undefined다
   const { id } = useParams<'id'>();
 
-  // key: id가 바뀌면 화면을 새로 만들어 이전 프로세스의 데이터가 남지 않게 한다 (useFetch는 id가 바뀌어도 이전 상태를 유지하므로)
+  // key: id가 바뀌면 화면을 새로 만들어 이전 프로세스의 데이터가 남지 않게 한다 (useFetch는 첫 렌더링 때만 캐시를 확인하고, id가 바뀌어도 이전 상태를 유지하므로)
   return <ProcessDetailView key={id} id={id} />;
 }
 
@@ -32,13 +32,13 @@ function ProcessDetailView({ id }: ProcessDetailViewProps) {
     if (!id) return Promise.reject(new Error('프로세스 ID가 없습니다.'));
     return getProcessDetail(id);
   }, [id]);
-  const detailState = useFetch(fetchDetail);
+  const detailState = useFetch(`/api/processes/${id}`, fetchDetail);
 
   const fetchRuns = useCallback(() => {
     if (!id) return Promise.reject(new Error('프로세스 ID가 없습니다.'));
     return getProcessRuns(id);
   }, [id]);
-  const runsState = useFetch(fetchRuns);
+  const runsState = useFetch(`/api/processes/${id}/runs`, fetchRuns);
 
   return (
     <main className="container">
