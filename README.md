@@ -22,6 +22,8 @@ MVP 범위 밖: 로그인 · 권한, 자동 새로고침, 정렬 · 페이지네
 
 ## 로드맵
 
+### v1.0 (완료)
+
 - [x] 환경 세팅 (Vite, GitHub, Vercel)
 - [x] API 명세 + 타입 정의
 - [x] MSW 목 API + 가상 데이터
@@ -33,6 +35,13 @@ MVP 범위 밖: 로그인 · 권한, 자동 새로고침, 정렬 · 페이지네
 - [x] 수기 재실행 (기준일자 입력 → 202 접수 / 400 잘못된 기준일자 / 409 이미 실행 중)
 - [x] 공통화 리팩터링 (fetch 래퍼 `apiGet`·`apiPost`, 커스텀 훅 `useFetch`)
 - [x] README 완성, v1.0.0
+
+### 다음 (v1.x)
+
+- [ ] 성능 개선 — 측정 기준선과 개선안: [docs/performance.md](docs/performance.md)
+- [ ] 테스트 · CI (Vitest, GitHub Actions)
+- [ ] 확장 기능 (재실행 후 이력 갱신, 자동 새로고침, 반응형, 차트 등)
+- [ ] 실서버 연동 (MSW 목 API → 실제 API)
 
 ## 기술 스택
 
@@ -161,7 +170,7 @@ export function useFetch<T>(fetcher: () => Promise<T>): FetchState<T>;
 
 ## AI 협업 (AX) 요약
 
-Claude Code와 함께 개발했습니다. 학습이 목적이라 아래처럼 역할을 나눠 **핵심 로직은 직접 작성하는 것을 원칙**으로 했고, AI에게 작성이나 수정을 맡긴 부분은 세션별 기록에 남겼습니다. 규칙은 [CLAUDE.md](CLAUDE.md)에, 세션별 기록은 [docs/ax-log.md](docs/ax-log.md)에 있습니다.
+Claude Code와 함께 개발했습니다. 학습이 목적이라 아래처럼 역할을 나눠 **핵심 로직은 직접 작성하는 것을 원칙**으로 했고, AI에게 작성이나 수정을 맡긴 부분은 세션별 기록에 남겼습니다. v1.0.0까지의 규칙은 [CLAUDE.md (v1.0.0)](https://github.com/alexsogoat/rpa-ops-dashboard/blob/v1.0.0/CLAUDE.md)에, 세션별 기록은 [docs/ax-log.md](docs/ax-log.md)에 있습니다.
 
 | AI에게 맡긴 것 | 직접 한 것 |
 |---|---|
@@ -177,6 +186,8 @@ Claude Code와 함께 개발했습니다. 학습이 목적이라 아래처럼 �
 - 공통 래퍼에서 `apiDelete` 제외 — 명세에 DELETE 요청이 없어 쓸 곳이 없어서
 
 **진행 방식**: 단계마다 `목표 → 코드 → 핵심 개념 → 직접 해볼 과제 → 확인 방법` 순서로 진행했습니다. 기능마다 브랜치를 만들고, AI 코드 리뷰에서 반영할 내용을 판단해 수정 커밋으로 남긴 뒤 PR로 병합했습니다. 리뷰 반영 이력이 남도록 squash가 아닌 merge commit을 사용합니다.
+
+**v1.0.0 이후**: 개인 프로젝트로 계속 개선하면서, 구현은 AI가 하고 설계 판단과 리뷰 반영 여부는 직접 결정하는 방식으로 바꿨습니다. AX 로그는 기술 결정이나 방향 전환이 있을 때만 남깁니다. 현재 규칙은 [CLAUDE.md](CLAUDE.md)에 있습니다.
 
 ## 로컬 실행
 
