@@ -38,10 +38,10 @@ MVP 범위 밖: 로그인 · 권한, 자동 새로고침, 정렬 · 페이지네
 
 ### 다음 (v1.x)
 
-- [ ] 성능 개선 — 측정 기준선과 개선안: [docs/performance.md](docs/performance.md)
+- [x] 성능 개선 1차 — 첫 화면 정적 뼈대 · 조회 캐시 · 정적 파일 캐시 헤더 ([측정 결과](docs/performance.md))
 - [ ] 테스트 · CI (Vitest, GitHub Actions)
 - [ ] 확장 기능 (재실행 후 이력 갱신, 자동 새로고침, 반응형, 차트 등)
-- [ ] 실서버 연동 (MSW 목 API → 실제 API)
+- [ ] 실서버 연동 (MSW 목 API → 실제 API, 배포 번들에서 MSW 제거)
 
 ## 기술 스택
 
@@ -60,7 +60,7 @@ flowchart LR
     P["pages<br/>DashboardPage · ProcessDetailPage"]
     C["components<br/>표 · 카드 · 뱃지 · 필터 · 재실행 폼"]
   end
-  H["hooks/useFetch<br/>로딩 · 오류 · 성공 상태"]
+  H["hooks/useFetch<br/>로딩 · 오류 · 성공 상태 + 응답 캐시"]
   A["api<br/>getProcesses · requestRerun …"]
   CL["api/client<br/>apiGet · apiPost"]
   M["mocks (MSW)<br/>handlers · data"]
@@ -73,7 +73,7 @@ flowchart LR
   CL -->|"fetch('/api/…')"| M
 ```
 
-- **화면**(`pages`)은 `useFetch`에 조회 함수를 넘기고, 돌려받은 상태(로딩 · 오류 · 성공)에 맞춰 그립니다. 재실행처럼 사용자 동작으로 시작하는 요청은 컴포넌트의 이벤트 핸들러에서 직접 부릅니다.
+- **화면**(`pages`)은 `useFetch`에 캐시 키(요청 경로)와 조회 함수를 넘기고, 돌려받은 상태(로딩 · 오류 · 성공)에 맞춰 그립니다. 5분 이내에 받은 응답이 있으면 로딩 없이 먼저 보여 주고 뒤에서 다시 받아 바꿉니다. 재실행처럼 사용자 동작으로 시작하는 요청은 컴포넌트의 이벤트 핸들러에서 직접 부릅니다.
 - `api/client`는 모든 요청이 지나가는 공통 함수입니다. `res.ok`를 확인하고, 실패하면 서버의 오류 메시지(`{ code, message }`)나 기본 문구를 담은 `Error`를 던집니다.
 - **MSW**가 네트워크 단계에서 `fetch('/api/…')`를 가로채 명세대로 응답합니다. 앱 코드는 실서버를 부를 때와 같으므로, 실서버가 생기면 `src/mocks`와 워커 시작 코드(`main.tsx`)만 걷어 내면 됩니다.
 
@@ -86,7 +86,7 @@ docs/
 src/
   types/                명세와 1:1로 맞춘 타입 (common · summary · process)
   api/                  client.ts(공통 fetch 래퍼) + 엔드포인트별 함수
-  hooks/                useFetch (조회 상태 공통화)
+  hooks/                useFetch (조회 상태 공통화 · 응답 캐시)
   pages/                화면 (DashboardPage, ProcessDetailPage, NotFoundPage)
   components/           재사용 컴포넌트 (요약 카드, 목록·이력 표, 필터 바, 상태 뱃지, 재실행 폼 등)
   utils/                표시용 포맷 함수
@@ -141,7 +141,7 @@ export type FetchState<T> =
   | { status: 'error'; message: string }
   | { status: 'success'; data: T };
 
-export function useFetch<T>(fetcher: () => Promise<T>): FetchState<T>;
+export function useFetch<T>(key: string, fetcher: () => Promise<T>): FetchState<T>;
 ```
 
 ## API
